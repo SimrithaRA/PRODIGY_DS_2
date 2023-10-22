@@ -1,0 +1,78 @@
+# EDA on Used Car Dataset
+# Dataset Source: [Used Cars Prices in UK](https://www.kaggle.com/datasets/muhammadawaistayyab/used-cars-prices-in-uk/data)
+
+# Import necessary libraries
+import pandas as pd
+import numpy as np
+import matplotlib.pyplot as plt
+import seaborn as sns
+
+# Load the dataset from a CSV file
+df = pd.read_csv('/content/used_cars_UK.csv')
+
+# Display summary statistics of the DataFrame
+df.describe()
+
+# Count and display the number of missing values in each column
+df.isnull().sum()
+
+# Display a random sample of 5 rows from the DataFrame
+df.sample(5)
+
+# Replace NaN values with 0 in the "Service history" and "Previous Owners" columns
+df['Service history'].fillna(0, inplace=True)
+df['Previous Owners'].fillna(0, inplace=True)
+
+# Define a list of columns to drop if they contain NaN values
+columns_to_drop = ['Doors', 'Seats', 'Emission Class', 'Engine']
+
+# Check if each column in the list has NaN values and drop them
+for column in columns_to_drop:
+    if column in df.columns and df[column].isnull().any():
+        df.drop(columns=[column], inplace=True)
+
+# Create histograms for numerical columns
+num_cols = ["Price", "Mileage(miles)", "Registration_Year", "Previous Owners"]
+for col in num_cols:
+    plt.figure(figsize=(6, 4))
+    df[col].plot(kind='hist', bins=20, title=col)
+    plt.xlabel(col)
+    plt.show()
+
+# Compute the correlation matrix of the numerical columns
+correlation_matrix = df.corr()
+
+# Visualize the correlation matrix as a heatmap
+sns.heatmap(correlation_matrix, annot=True)
+plt.show()
+
+# Generate a pair plot to explore pairwise relationships between numerical variables
+sns.pairplot(df)
+plt.show()
+
+# Create a box plot to analyze the relationship between "Fuel type" and "Price"
+plt.figure(figsize=(10, 5))
+sns.boxplot(x='Fuel type', y='Price', data=df)
+#plt.xticks(rotation=0)  # You can adjust the x-axis label rotation if needed
+plt.show()
+
+# Choose the numerical column for which you want to detect anomalies
+numerical_column = 'Price'
+
+# Calculate the Z-scores for the selected column
+z_scores = np.abs((df[numerical_column] - df[numerical_column].mean()) / df[numerical_column].std())
+
+# Define a threshold (e.g., 2) to identify anomalies
+threshold = 2
+
+# Identify rows with Z-scores exceeding the threshold
+anomalies = df[z_scores > threshold]
+
+# Visualize the anomalies in a scatter plot
+plt.figure(figsize=(8, 6))
+plt.scatter(df.index, df[numerical_column], c='b', label='Data')
+plt.scatter(anomalies.index, anomalies[numerical_column], c='r', label='Anomalies')
+plt.xlabel('Index')
+plt.ylabel(numerical_column)
+plt.legend()
+plt.show()
