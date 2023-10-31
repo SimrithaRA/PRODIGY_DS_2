@@ -38,5 +38,3 @@ Feel free to use and adapt this code for your own data analysis projects.
 - [Kaggle Dataset](https://www.kaggle.com/datasets/muhammadawaistayyab/used-cars-prices-in-uk/data)
 
 Happy analyzing!
-
-Author: [Your Name]
